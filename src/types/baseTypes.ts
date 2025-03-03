@@ -4,3 +4,9 @@ export interface ToDoItem {
     isCompleted: boolean;
     categoryId: string;
   }
+  
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+}
