@@ -9,17 +9,17 @@ const get = (id: any) => {
   return http.get<ToDoItem>(`/ToDoItems/${id}`);
 };
 
-// const create = (data: ITutorialData) => {
-//   return http.post<ITutorialData>("/tutorials", data);
-// };
+const create = (data: ToDoItem) => {
+  return http.post<ToDoItem>("/ToDoItems", data);
+};
 
 const update = (id: any, data: Partial<ToDoItem>) => {
   return http.patch<any>(`/ToDoItems/${id}`, data);
 };
 
-// const remove = (id: any) => {
-//   return http.delete<any>(`/tutorials/${id}`);
-// };
+const remove = (id: any) => {
+  return http.delete<any>(`/ToDoItems/${id}`);
+};
 
 // const removeAll = () => {
 //   return http.delete<any>(`/tutorials`);
@@ -32,9 +32,9 @@ const update = (id: any, data: Partial<ToDoItem>) => {
 const ToDoService = {
   getAll,
   get,
-  //create,
+  create,
   update,
-  //remove,
+  remove,
   //removeAll,
   //findByTitle,
 };

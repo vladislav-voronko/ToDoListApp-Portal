@@ -27,3 +27,32 @@
 .logout-button:hover {
   background-color: #d32f2f;
 }
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background-color: #66af69;
+  color: white;
+}
+
+.tabs button:hover {
+  background-color: #45a049;
+  color: white;
+}
+
+.tab-content {
+  display: flex;
+
+}
