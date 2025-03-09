@@ -2,96 +2,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.todo-list-container {
-  padding: 20px;
-  margin: 20px;
-  position: relative;
-}
-
-.add-item {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.add-item input {
-  flex: 1;
-  padding: 10px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: Arial, Helvetica, sans-serif;
-  box-sizing: border-box; /* Учитываем padding и border в общей ширине */
-}
-
-.add-item input::placeholder {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.add-item select {
-  flex: 1;
-  padding: 10px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: Arial, Helvetica, sans-serif;
-  box-sizing: border-box; /* Учитываем padding и border в общей ширине */
-}
-
-.add-item button {
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.add-item button:hover {
-  background-color: #45a049;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-li:hover {
-  background-color: #f0f0f0;
-}
-
-li button {
-  margin-left: auto;
-  padding: 5px 10px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-li button:hover {
-  background-color: #d32f2f;
-}
-
 .todo-dialog {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #383838;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -99,62 +14,6 @@ li button:hover {
   width: 400px;
   z-index: 1001;
   font-family: Arial, Helvetica, sans-serif;
-}
-
-.todo-dialog .buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.todo-dialog button {
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.todo-dialog button.cancel {
-  background-color: #f44336;
-}
-
-.todo-dialog button:hover {
-  background-color: #45a049;
-}
-
-.todo-dialog button.cancel:hover {
-  background-color: #d32f2f;
-}
-
-.todo-dialog .dialog-input {
-  width: calc(100%);
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: Arial, Helvetica, sans-serif;
-  box-sizing: border-box; /* Учитываем padding и border в общей ширине */
-}
-
-.todo-dialog .dialog-input::placeholder {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.todo-dialog .dialog-select {
-  width: calc(100%);
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: Arial, Helvetica, sans-serif;
-  box-sizing: border-box; /* Учитываем padding и border в общей ширине */
-}
-
-.todo-dialog .dialog-checkbox {
-  margin-top: 10px;
 }
 
 .overlay {

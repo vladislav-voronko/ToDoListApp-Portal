@@ -1,18 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import ToDoService from "../services/ToDoService";
 import CategoryService from "../services/CategoryService";
 import ToDoItemDialog from "./ToDoItemDialog";
-import { ToDoItem, Category as CategoryType } from "../types/baseTypes";
-import "./ToDoList.css"; // Импортируем стили
+import ToDoItem from "./ToDoItem";
+import { ToDoItem as ToDoItemType, Category as CategoryType } from "../types/baseTypes";
+import { Container, TextField, Button, Select, MenuItem, Typography, Box, List, FormControl, InputLabel } from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import "./ToDoList.css";
+
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#90caf9',
+    },
+    secondary: {
+      main: '#f48fb1',
+    },
+    background: {
+      default: '#121212',
+      paper: '#121212',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#ffffff',
+    },
+  },
+});
 
 const ToDoList: React.FC = () => {
-  const [toDoItems, setToDoItems] = useState<ToDoItem[]>([]);
+  const [toDoItems, setToDoItems] = useState<ToDoItemType[]>([]);
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [newItemTitle, setNewItemTitle] = useState<string>("");
   const [newItemCategory, setNewItemCategory] = useState<string>("");
-  const [selectedItem, setSelectedItem] = useState<ToDoItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ToDoItemType | null>(null);
   const [isFetched, setIsFetched] = useState<boolean>(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isFetched) {
@@ -42,7 +64,7 @@ const ToDoList: React.FC = () => {
 
   const addItem = async () => {
     try {
-      const newItem = { title: newItemTitle, categoryId: newItemCategory, isCompleted: false } as ToDoItem;
+      const newItem = { title: newItemTitle, categoryId: newItemCategory, isCompleted: false } as ToDoItemType;
       const response = await ToDoService.create(newItem);
       setToDoItems([...toDoItems, response.data]);
       setNewItemTitle("");
@@ -61,7 +83,20 @@ const ToDoList: React.FC = () => {
     }
   };
 
-  const handleItemClick = (item: ToDoItem) => {
+  const toggleComplete = async (id: string) => {
+    try {
+      const item = toDoItems.find((item) => item.id === id);
+      if (item) {
+        const updatedItem = { ...item, isCompleted: !item.isCompleted };
+        await ToDoService.update(id, updatedItem);
+        setToDoItems(toDoItems.map((item) => (item.id === id ? updatedItem : item)));
+      }
+    } catch (error) {
+      console.error("Failed to update to-do item:", error);
+    }
+  };
+
+  const handleItemClick = (item: ToDoItemType) => {
     setSelectedItem(item);
   };
 
@@ -77,7 +112,7 @@ const ToDoList: React.FC = () => {
 
   const updateItem = async (id: string, title: string, categoryId: string, isCompleted: boolean) => {
     try {
-      const updatedItem = { id, title, categoryId, isCompleted } as ToDoItem;
+      const updatedItem = { id, title, categoryId, isCompleted } as ToDoItemType;
       await ToDoService.update(id, updatedItem);
       setToDoItems(toDoItems.map((item) => (item.id === id ? updatedItem : item)));
       setSelectedItem(null);
@@ -86,79 +121,89 @@ const ToDoList: React.FC = () => {
     }
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-      handleCancel();
-    }
-  };
+  return (
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="md">
+        <Box mt={5}>
+          <Typography variant="h4" component="h2" gutterBottom>
+            To-Do List
+          </Typography>
+          <AddItemForm
+            newItemTitle={newItemTitle}
+            setNewItemTitle={setNewItemTitle}
+            newItemCategory={newItemCategory}
+            setNewItemCategory={setNewItemCategory}
+            categories={categories}
+            addItem={addItem}
+          />
+          {selectedItem && (
+            <ToDoItemDialog
+              open={!!selectedItem}
+              item={selectedItem}
+              onUpdate={updateItem}
+              onChange={handleItemChange}
+              onClose={handleCancel}
+            />
+          )}
+          <List>
+            {toDoItems.sort((a,b) =>(a.title.localeCompare(b.title))).map((item) => (
+              <ToDoItem
+                key={item.id}
+                item={item}
+                onToggleComplete={toggleComplete}
+                onDelete={deleteItem}
+                onClick={handleItemClick}
+              />
+            ))}
+          </List>
+        </Box>
+      </Container>
+    </ThemeProvider>
+  );
+};
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      handleCancel();
-    }
-  };
-
-  useEffect(() => {
-    if (selectedItem) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleKeyDown);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedItem]);
+const AddItemForm: React.FC<{
+  newItemTitle: string;
+  setNewItemTitle: React.Dispatch<React.SetStateAction<string>>;
+  newItemCategory: string;
+  setNewItemCategory: React.Dispatch<React.SetStateAction<string>>;
+  categories: CategoryType[];
+  addItem: () => void;
+}> = ({ newItemTitle, setNewItemTitle, newItemCategory, setNewItemCategory, categories, addItem }) => {
 
   return (
-    <div className="todo-list-container">
-      <h2>To-Do List</h2>
-      <div className="add-item">
-        <input
-          type="text"
-          value={newItemTitle}
-          onChange={(e) => setNewItemTitle(e.target.value)}
-          placeholder="What you need to do"
-        />
-        <select
-          value={newItemCategory}
-          onChange={(e) => setNewItemCategory(e.target.value)}
+    <Box display="flex">
+      <TextField
+        label="What needs to be done?"
+        value={newItemTitle || ""}
+        onChange={(e) => setNewItemTitle(e.target.value)}
+        fullWidth
+        variant="outlined"
+        sx={{ mr: 1 }}
+      />
+      <FormControl fullWidth variant="outlined" sx={{ mr: 1 }}>
+        <InputLabel id="category-select-label">Category</InputLabel>
+        <Select
+          label="Category"
+          labelId='category-select-label'
+          value={newItemCategory || ""}
+          onChange={(e) => setNewItemCategory(e.target.value as string)}
         >
-          <option value="">Select category</option>
           {categories.map((category) => (
-            <option key={category.id} value={category.id}>
+            <MenuItem key={category.id} value={category.id}>
               {category.name}
-            </option>
+            </MenuItem>
           ))}
-        </select>
-        <button onClick={addItem}>Add</button>
-      </div>
-      {selectedItem && <div className="overlay" />}
-      {selectedItem ? (
-        <div className="todo-dialog" ref={dialogRef}>
-          <ToDoItemDialog
-            item={selectedItem}
-            onUpdate={updateItem}
-            onChange={handleItemChange}
-          />
-          <div className="buttons">
-            <button onClick={handleCancel} className="cancel">Cancel</button>
-            <button onClick={() => updateItem(selectedItem.id, selectedItem.title, selectedItem.categoryId, selectedItem.isCompleted)}>Update</button>
-          </div>
-        </div>
-      ) : (
-        <ul>
-          {toDoItems.map((item) => (
-            <li key={item.id} onClick={() => handleItemClick(item)}>
-              <span>{item.title}</span>
-              <button onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+        </Select>
+      </FormControl>
+      <Button
+        onClick={addItem}
+        variant="contained"
+        color="primary"
+      >
+        Add
+      </Button>
+    </Box>
   );
 };
 
