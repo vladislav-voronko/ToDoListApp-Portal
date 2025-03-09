@@ -1,43 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { ListItem, ListItemText, ListItemButton, IconButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Category as CategoryType } from "../types/baseTypes";
 
 interface CategoryProps {
-  id: string;
-  name: string;
-  description: string;
-  onUpdate: (id: string, name: string, description: string) => void;
-  onChange: (name: string, description: string) => void;
+  item: CategoryType;
+  onClick: (item: CategoryType) => void;
+  onDelete: (id: string) => void;
 }
 
-const Category: React.FC<CategoryProps> = ({ id, name, description, onUpdate, onChange }) => {
-  const [newName, setNewName] = useState(name);
-  const [newDescription, setNewDescription] = useState(description);
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewName(e.target.value);
-    onChange(e.target.value, newDescription);
-  };
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewDescription(e.target.value);
-    onChange(newName, e.target.value);
-  };
-
+const Category: React.FC<CategoryProps> = ({ item, onClick, onDelete }) => {
+  
   return (
-    <div>
-      <h3>Edit Category</h3>
-      <input
-        type="text"
-        value={newName}
-        onChange={handleNameChange}
-        placeholder="Category name"
-      />
-      <input
-        type="text"
-        value={newDescription}
-        onChange={handleDescriptionChange}
-        placeholder="Category description"
-      />
-    </div>
+    <ListItem>
+    <ListItemButton onClick={() => onClick(item)}>
+      <ListItemText primary={item.name} />
+      <IconButton edge="end" aria-label="delete" onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}>
+        <DeleteIcon />
+      </IconButton>
+    </ListItemButton>
+  </ListItem>
   );
 };
 

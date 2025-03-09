@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Category as CategoryType } from "../types/baseTypes";
+import { Category } from "../types/baseTypes";
+import { TextField, Box, Typography, Button } from "@mui/material";
 
 interface CategoryDialogProps {
-  category: CategoryType;
+  item: Category;
   onUpdate: (id: string, name: string, description: string) => void;
   onChange: (name: string, description: string) => void;
+  onCancel: () => void;
 }
 
-const CategoryDialog: React.FC<CategoryDialogProps> = ({ category, onUpdate, onChange }) => {
-  const [newName, setNewName] = useState(category.name);
-  const [newDescription, setNewDescription] = useState(category.description);
+const CategoryDialog: React.FC<CategoryDialogProps> = ({ item, onUpdate, onChange, onCancel }) => {
+  const [newName, setNewName] = useState(item.name);
+  const [newDescription, setNewDescription] = useState(item.description);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);
@@ -21,24 +23,42 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({ category, onUpdate, onC
     onChange(newName, e.target.value);
   };
 
+  const handleUpdate = () => {
+    onUpdate(item.id, newName, newDescription);
+  };
+
   return (
-    <div>
-      <h3>Edit Category</h3>
-      <input
-        type="text"
-        value={newName}
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Edit Category
+      </Typography>
+      <TextField
+        label="Category name"
+        value={newName || ""}
         onChange={handleNameChange}
-        placeholder="Category name"
-        className="dialog-input"
+        fullWidth
+        margin="normal"
+        variant="outlined"
       />
-      <input
-        type="text"
-        value={newDescription}
+      <TextField
+        label="Description"
+        value={newDescription || ""}
         onChange={handleDescriptionChange}
-        placeholder="Category description"
-        className="dialog-input"
+        fullWidth
+        margin="normal"
+        variant="outlined"
+
       />
-    </div>
+
+      <Box display="flex" justifyContent="space-between" mt={2}>
+        <Button onClick={onCancel} variant="contained" color="error">
+          Cancel
+        </Button>
+        <Button onClick={handleUpdate} variant="contained" color="primary">
+          Update
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

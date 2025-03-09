@@ -2,7 +2,30 @@ import React, { useState, useEffect, useRef } from 'react';
 import CategoryService from "../services/CategoryService";
 import CategoryDialog from "./CategoryDialog";
 import { Category as CategoryType } from "../types/baseTypes";
-import "./CategoryList.css"; // Импортируем стили
+import { Container, TextField, Button, Typography, Box, List } from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import "./CategoryList.css";
+import Category from './Category';
+
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#90caf9',
+    },
+    secondary: {
+      main: '#f48fb1',
+    },
+    background: {
+      default: '#121212',
+      paper: '#121212',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#ffffff',
+    },
+  },
+});
 
 const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -75,12 +98,6 @@ const CategoryList: React.FC = () => {
     }
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-      handleCancel();
-    }
-  };
-
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Escape') {
       handleCancel();
@@ -89,60 +106,91 @@ const CategoryList: React.FC = () => {
 
   useEffect(() => {
     if (selectedCategory) {
-      document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleKeyDown);
     } else {
-      document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     }
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [selectedCategory]);
 
   return (
-    <div className="category-list-container">
-      <h2>Categories</h2>
-      <div className="add-category">
-        <input
-          type="text"
-          value={newCategoryName}
-          onChange={(e) => setNewCategoryName(e.target.value)}
-          placeholder="Category name"
-        />
-        <input
-          type="text"
-          value={newCategoryDescription}
-          onChange={(e) => setNewCategoryDescription(e.target.value)}
-          placeholder="Category description"
-        />
-        <button onClick={addCategory}>Add</button>
-      </div>
-      {selectedCategory && <div className="overlay" />}
-      {selectedCategory ? (
-        <div className="category-dialog" ref={dialogRef}>
-          <CategoryDialog
-            category={selectedCategory}
-            onUpdate={updateCategory}
-            onChange={handleCategoryChange}
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="md">
+        <Box mt={5}>
+          <Typography variant="h4" component="h2" gutterBottom>
+            Categories
+          </Typography>
+          <AddItemForm
+            newCategoryName={newCategoryName}
+            setNewCategoryName={setNewCategoryName}
+            newCategoryDescription={newCategoryDescription}
+            setNewCategoryDescription={setNewCategoryDescription}
+            addCategory={addCategory}
           />
-          <div className="buttons">
-            <button onClick={handleCancel} className="cancel">Cancel</button>
-            <button onClick={() => updateCategory(selectedCategory.id, selectedCategory.name, selectedCategory.description)}>Update</button>
-          </div>
-        </div>
-      ) : (
-        <ul>
-          {categories.map((category) => (
-            <li key={category.id} onClick={() => handleCategoryClick(category)}>
-              <span>{category.name}</span>
-              <button onClick={(e) => { e.stopPropagation(); deleteCategory(category.id); }}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+          {selectedCategory && <div className="overlay" />}
+          {selectedCategory ? (
+            <div className="category-dialog" ref={dialogRef}>
+              <CategoryDialog
+                item={selectedCategory}
+                onUpdate={updateCategory}
+                onChange={handleCategoryChange}
+                onCancel={handleCancel}
+              />
+            </div>
+          ) : (
+            <List>
+              {categories.sort((a,b) =>(a.name.localeCompare(b.name))).map((item) => (
+                <Category
+                  key={item.id}
+                  item={item}
+                  onDelete={deleteCategory}
+                  onClick={handleCategoryClick}
+                />
+              ))}
+            </List>
+          )}
+        </Box>
+      </Container>
+    </ThemeProvider>
+  );
+};
+
+const AddItemForm: React.FC<{
+  newCategoryName: string;
+  newCategoryDescription: string;
+  setNewCategoryDescription: React.Dispatch<React.SetStateAction<string>>;
+  setNewCategoryName: React.Dispatch<React.SetStateAction<string>>;
+  addCategory: () => void;
+}> = ({ newCategoryName, newCategoryDescription, setNewCategoryName, setNewCategoryDescription, addCategory }) => {
+
+  return (
+    <Box display="flex">
+      <TextField
+        label="Category name"
+        value={newCategoryName || ""}
+        onChange={(e) => setNewCategoryName(e.target.value)}
+        fullWidth
+        variant="outlined"
+        sx={{ mr: 1 }}
+      />
+      <TextField
+        label="Description"
+        value={newCategoryDescription || ""}
+        onChange={(e) => setNewCategoryDescription(e.target.value)}
+        fullWidth
+        variant="outlined"
+        sx={{ mr: 1 }}
+      />
+      <Button
+        onClick={addCategory}
+        variant="contained"
+        color="primary"
+      >
+        Add
+      </Button>
+    </Box>
   );
 };
 
