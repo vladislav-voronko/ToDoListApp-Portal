@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ToDoItem, Category as CategoryType } from "../types/baseTypes";
 import CategoryService from "../services/CategoryService";
-import { TextField, Select, MenuItem, Checkbox, FormControl, FormControlLabel, Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, SelectChangeEvent } from "@mui/material";
+import { TextField, Select, MenuItem, Checkbox, FormControl, FormControlLabel, Button, Dialog, DialogActions, DialogContent, DialogTitle, SelectChangeEvent } from "@mui/material";
 
 interface ToDoItemDialogProps {
   open: boolean;
