@@ -72,7 +72,7 @@ const App: React.FC = () => {
               </Toolbar>
               <Tabs
                 value={activeTab}
-                onChange={(event, newValue) => setActiveTab(newValue)}
+                onChange={(_event, newValue) => setActiveTab(newValue)}
                 aria-label="nav tabs"
               >
                 <Tab label="Todo Items" value="todos" onClick={() => navigate("/todoitems")} />

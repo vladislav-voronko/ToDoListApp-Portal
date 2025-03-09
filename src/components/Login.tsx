@@ -18,7 +18,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     e.preventDefault();
 
     try {
-      const token = await AuthService.login({ email, password });
+      await AuthService.login({ email, password });
       setIsAuthenticated(true);
       navigate("/");
     } catch (error) {
@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     }
   };
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
