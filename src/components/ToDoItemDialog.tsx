@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ToDoItem, Category as CategoryType } from "../types/baseTypes";
 import CategoryService from "../services/CategoryService";
-import { TextField, Select, MenuItem, Checkbox, FormControl, FormControlLabel, Button, Dialog, DialogActions, DialogContent, DialogTitle, SelectChangeEvent } from "@mui/material";
+import { TextField, Select, MenuItem, Checkbox, FormControl, FormControlLabel, Button, Dialog, DialogActions, DialogContent, DialogTitle, SelectChangeEvent, InputLabel } from "@mui/material";
 
 interface ToDoItemDialogProps {
   open: boolean;
@@ -68,8 +68,10 @@ const ToDoItemDialog: React.FC<ToDoItemDialogProps> = ({ open, item, onUpdate, o
           variant="outlined"
         />
         <FormControl fullWidth margin="normal" variant="outlined">
+          <InputLabel id="category-select-label">Category</InputLabel>
           <Select
             label="Category"
+            labelId='category-select-label'
             value={newCategoryId || ""}
             onChange={handleCategoryChange}
             displayEmpty

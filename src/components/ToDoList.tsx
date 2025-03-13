@@ -6,6 +6,7 @@ import ToDoItem from "./ToDoItem";
 import { ToDoItem as ToDoItemType, Category as CategoryType } from "../types/baseTypes";
 import { Container, TextField, Button, Select, MenuItem, Typography, Box, List, FormControl, InputLabel } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useSnackbar } from '../context/SnackbarContext';
 import "./ToDoList.css";
 
 const theme = createTheme({
@@ -35,6 +36,7 @@ const ToDoList: React.FC = () => {
   const [newItemCategory, setNewItemCategory] = useState<string>("");
   const [selectedItem, setSelectedItem] = useState<ToDoItemType | null>(null);
   const [isFetched, setIsFetched] = useState<boolean>(false);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (!isFetched) {
@@ -69,8 +71,21 @@ const ToDoList: React.FC = () => {
       setToDoItems([...toDoItems, response.data]);
       setNewItemTitle("");
       setNewItemCategory("");
+      showSnackbar('To-do item added successfully', 'success');
     } catch (error) {
-      console.error("Failed to add to-do item:", error);
+      showSnackbar('Failed to add to-do item', 'error');
+    }
+  };
+
+  const updateItem = async (id: string, title: string, categoryId: string, isCompleted: boolean) => {
+    try {
+      const updatedItem = { id, title, categoryId, isCompleted } as ToDoItemType;
+      await ToDoService.update(id, updatedItem);
+      setToDoItems(toDoItems.map((item) => (item.id === id ? updatedItem : item)));
+      setSelectedItem(null);
+      showSnackbar('To-do item updated successfully', 'success');
+    } catch (error) {
+      showSnackbar('Failed to update to-do item', 'error');
     }
   };
 
@@ -78,8 +93,9 @@ const ToDoList: React.FC = () => {
     try {
       await ToDoService.remove(id);
       setToDoItems(toDoItems.filter((item) => item.id !== id));
+      showSnackbar('To-do item deleted successfully', 'success');
     } catch (error) {
-      console.error("Failed to delete to-do item:", error);
+      showSnackbar('Failed to delete to-do item', 'error');
     }
   };
 
@@ -92,7 +108,7 @@ const ToDoList: React.FC = () => {
         setToDoItems(toDoItems.map((item) => (item.id === id ? updatedItem : item)));
       }
     } catch (error) {
-      console.error("Failed to update to-do item:", error);
+      showSnackbar('Failed to update to-do item', 'error');
     }
   };
 
@@ -107,17 +123,6 @@ const ToDoList: React.FC = () => {
   const handleItemChange = (title: string, categoryId: string, isCompleted: boolean) => {
     if (selectedItem) {
       setSelectedItem({ ...selectedItem, title, categoryId, isCompleted });
-    }
-  };
-
-  const updateItem = async (id: string, title: string, categoryId: string, isCompleted: boolean) => {
-    try {
-      const updatedItem = { id, title, categoryId, isCompleted } as ToDoItemType;
-      await ToDoService.update(id, updatedItem);
-      setToDoItems(toDoItems.map((item) => (item.id === id ? updatedItem : item)));
-      setSelectedItem(null);
-    } catch (error) {
-      console.error("Failed to update to-do item:", error);
     }
   };
 
@@ -146,7 +151,7 @@ const ToDoList: React.FC = () => {
             />
           )}
           <List>
-            {toDoItems.sort((a,b) =>(a.title.localeCompare(b.title))).map((item) => (
+            {toDoItems.sort((a, b) => (a.title.localeCompare(b.title))).map((item) => (
               <ToDoItem
                 key={item.id}
                 item={item}

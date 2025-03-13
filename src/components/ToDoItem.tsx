@@ -12,7 +12,7 @@ interface ToDoItemProps {
 
 const ToDoItem: React.FC<ToDoItemProps> = ({ item, onToggleComplete, onDelete, onClick }) => {
   return (
-    <ListItem>
+    <ListItem disablePadding sx={{ borderRadius: 1, border: 1, borderColor: 'grey.500', my: 1, }}>
       <ListItemButton onClick={() => onClick(item)}>
         <Checkbox
           checked={item.isCompleted}
