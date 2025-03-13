@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import AuthService from "../services/AuthService";
-import { Container, TextField, Button, Box, Typography, Snackbar, Alert } from "@mui/material";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthService from '../services/AuthService';
+import { Container, TextField, Button, Box, Typography } from '@mui/material';
+import { useSnackbar } from '../context/SnackbarContext';
 
 interface LoginProps {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [open, setOpen] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,19 +20,11 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     try {
       await AuthService.login({ email, password });
       setIsAuthenticated(true);
-      navigate("/");
+      navigate('/');
     } catch (error) {
-      setErrorMessage("Login failed. Please check your credentials.");
-      setOpen(true);
-      console.error("Login failed:", error);
+      console.error('Login failed:', error);
+      showSnackbar('Login failed. Please check your credentials.', 'error');
     }
-  };
-
-  const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpen(false);
   };
 
   return (
@@ -70,15 +62,6 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
             Login
           </Button>
         </Box>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={open}
-          autoHideDuration={6000}
-          onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-            {errorMessage}
-          </Alert>
-        </Snackbar>
       </Box>
     </Container>
   );
