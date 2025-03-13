@@ -12,7 +12,7 @@ interface CategoryProps {
 const Category: React.FC<CategoryProps> = ({ item, onClick, onDelete }) => {
   
   return (
-    <ListItem>
+    <ListItem disablePadding sx={{ borderRadius: 1, border: 1, borderColor: 'grey.500', my: 1, }}>
     <ListItemButton onClick={() => onClick(item)}>
       <ListItemText primary={item.name} />
       <IconButton edge="end" aria-label="delete" onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}>

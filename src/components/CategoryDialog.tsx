@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Category } from "../types/baseTypes";
-import { TextField, Box, Typography, Button } from "@mui/material";
+import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 
 interface CategoryDialogProps {
+  open: boolean;
   item: Category;
   onUpdate: (id: string, name: string, description: string) => void;
   onChange: (name: string, description: string) => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
-const CategoryDialog: React.FC<CategoryDialogProps> = ({ item, onUpdate, onChange, onCancel }) => {
+const CategoryDialog: React.FC<CategoryDialogProps> = ({ open, item, onUpdate, onChange, onClose }) => {
   const [newName, setNewName] = useState(item.name);
   const [newDescription, setNewDescription] = useState(item.description);
 
@@ -28,10 +29,9 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({ item, onUpdate, onChang
   };
 
   return (
-    <Box>
-      <Typography variant="h6" gutterBottom>
-        Edit Category
-      </Typography>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Edit Category</DialogTitle>
+      <DialogContent>
       <TextField
         label="Category name"
         value={newName || ""}
@@ -47,18 +47,17 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({ item, onUpdate, onChang
         fullWidth
         margin="normal"
         variant="outlined"
-
       />
-
-      <Box display="flex" justifyContent="space-between" mt={2}>
-        <Button onClick={onCancel} variant="contained" color="error">
+      </DialogContent>
+      <DialogActions>
+      <Button onClick={onClose} variant="contained" color="secondary">
           Cancel
         </Button>
         <Button onClick={handleUpdate} variant="contained" color="primary">
           Update
         </Button>
-      </Box>
-    </Box>
+      </DialogActions>
+    </Dialog>    
   );
 };
 

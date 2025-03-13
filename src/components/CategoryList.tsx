@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import CategoryService from "../services/CategoryService";
 import CategoryDialog from "./CategoryDialog";
 import { Category as CategoryType } from "../types/baseTypes";
@@ -6,6 +6,7 @@ import { Container, TextField, Button, Typography, Box, List } from "@mui/materi
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "./CategoryList.css";
 import Category from './Category';
+import { useSnackbar } from '../context/SnackbarContext';
 
 const theme = createTheme({
   palette: {
@@ -33,7 +34,7 @@ const CategoryList: React.FC = () => {
   const [newCategoryDescription, setNewCategoryDescription] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
   const [isFetched, setIsFetched] = useState<boolean>(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (!isFetched) {
@@ -58,8 +59,9 @@ const CategoryList: React.FC = () => {
       setCategories([...categories, response.data]);
       setNewCategoryName("");
       setNewCategoryDescription("");
+      showSnackbar('Category added successfully', 'success');
     } catch (error) {
-      console.error("Failed to add category:", error);
+      showSnackbar('Failed to add category', 'error');
     }
   };
 
@@ -70,6 +72,7 @@ const CategoryList: React.FC = () => {
         category.id === id ? { ...category, name, description } : category
       ));
       setSelectedCategory(null);
+      showSnackbar('Category updated successfully', 'success');
     } catch (error) {
       console.error("Failed to update category:", error);
     }
@@ -79,8 +82,9 @@ const CategoryList: React.FC = () => {
     try {
       await CategoryService.remove(id);
       setCategories(categories.filter((category) => category.id !== id));
+      showSnackbar('Category deleted successfully', 'success');
     } catch (error) {
-      console.error("Failed to delete category:", error);
+      showSnackbar('Failed to delete category', 'error');
     }
   };
 
@@ -129,18 +133,16 @@ const CategoryList: React.FC = () => {
             setNewCategoryDescription={setNewCategoryDescription}
             addCategory={addCategory}
           />
-          {selectedCategory && <div className="overlay" />}
-          {selectedCategory ? (
-            <div className="category-dialog" ref={dialogRef}>
-              <CategoryDialog
-                item={selectedCategory}
-                onUpdate={updateCategory}
-                onChange={handleCategoryChange}
-                onCancel={handleCancel}
-              />
-            </div>
-          ) : (
-            <List>
+          {selectedCategory && (
+            <CategoryDialog
+              open={!!selectedCategory}
+              item={selectedCategory}
+              onUpdate={updateCategory}
+              onChange={handleCategoryChange}
+              onClose={handleCancel}
+          />
+          )}
+          <List>
               {categories.sort((a,b) =>(a.name.localeCompare(b.name))).map((item) => (
                 <Category
                   key={item.id}
@@ -150,7 +152,6 @@ const CategoryList: React.FC = () => {
                 />
               ))}
             </List>
-          )}
         </Box>
       </Container>
     </ThemeProvider>
