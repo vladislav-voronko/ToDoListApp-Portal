@@ -3,6 +3,7 @@ import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
 import { Container, CssBaseline, AppBar, Toolbar, Typography, Button, Box, Tabs, Tab } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Login from "./components/Login";
+import Register from "./components/Register";
 import TodoList from "./components/ToDoList";
 import CategoryList from "./components/CategoryList";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -39,6 +40,7 @@ const AppContent: React.FC = () => {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     );

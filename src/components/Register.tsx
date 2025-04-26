@@ -1,33 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthService from "../services/AuthService";
 import { Container, TextField, Button, Box, Typography } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
 import { useSnackbar } from "../context/SnackbarContext";
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth();
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    if (!email || !password) {
-      setError("Email and password are required");
+    if (password !== confirmPassword) {
+      showSnackbar("Passwords do not match", "error");
       return;
     }
 
     try {
-      await login(email, password);
-      showSnackbar("Login successful", "success");
-      navigate("/todoitems");
-    } catch (err) {
-      setError("Invalid email or password");
-      showSnackbar("Login failed. Please check your credentials.", "error");
+      await AuthService.register({ email, password });
+      showSnackbar("Registration successful", "success");
+      navigate("/login");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      showSnackbar("Registration failed. Please try again.", "error");
     }
   };
 
@@ -35,10 +33,9 @@ const Login: React.FC = () => {
     <Container maxWidth="sm">
       <Box mt={5}>
         <Typography variant="h4" component="h2" gutterBottom>
-          Login
+          Register
         </Typography>
-        {error && <Typography color="error">{error}</Typography>}
-        <Box component="form" onSubmit={handleLogin} noValidate>
+        <Box component="form" onSubmit={handleRegister} noValidate>
           <TextField
             label="Email"
             type="email"
@@ -47,6 +44,7 @@ const Login: React.FC = () => {
             fullWidth
             margin="dense"
             variant="outlined"
+            required
           />
           <TextField
             label="Password"
@@ -56,6 +54,17 @@ const Login: React.FC = () => {
             fullWidth
             margin="dense"
             variant="outlined"
+            required
+          />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            fullWidth
+            margin="dense"
+            variant="outlined"
+            required
           />
           <Button
             type="submit"
@@ -64,24 +73,12 @@ const Login: React.FC = () => {
             fullWidth
             sx={{ mt: 2 }}
           >
-            Login
+            Sign up
           </Button>
-        </Box>
-        <Box mt={2} textAlign="center">
-          <Typography variant="body2">
-            Don't have an account?{" "}
-            <Button
-              variant="text"
-              color="primary"
-              onClick={() => navigate("/register")}
-            >
-              Sign up
-            </Button>
-          </Typography>
         </Box>
       </Box>
     </Container>
   );
 };
 
-export default Login;
+export default Register;
