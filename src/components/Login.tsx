@@ -1,29 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthService from '../services/AuthService';
-import { Container, TextField, Button, Box, Typography } from '@mui/material';
-import { useSnackbar } from '../context/SnackbarContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Container, TextField, Button, Box, Typography } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
+import { useSnackbar } from "../context/SnackbarContext";
 
-interface LoginProps {
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const { login } = useAuth();
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     try {
-      await AuthService.login({ email, password });
-      setIsAuthenticated(true);
-      navigate('/');
-    } catch (error) {
-      console.error('Login failed:', error);
-      showSnackbar('Login failed. Please check your credentials.', 'error');
+      await login(email, password);
+      showSnackbar("Login successful", "success");
+      navigate("/todoitems");
+    } catch (err) {
+      setError("Invalid email or password");
+      showSnackbar("Login failed. Please check your credentials.", "error");
     }
   };
 
@@ -33,6 +32,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
         <Typography variant="h4" component="h2" gutterBottom>
           Login
         </Typography>
+        {error && <Typography color="error">{error}</Typography>}
         <Box component="form" onSubmit={handleLogin} noValidate>
           <TextField
             label="Email"
@@ -57,7 +57,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
             variant="contained"
             color="primary"
             fullWidth
-            sx={{ mt: 1 }}
+            sx={{ mt: 2 }}
           >
             Login
           </Button>

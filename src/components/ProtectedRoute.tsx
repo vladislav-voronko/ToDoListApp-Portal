@@ -1,21 +1,24 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 interface ProtectedRouteProps {
-  isAuthenticated: boolean;
-  redirectPath?: string;
   children: React.ReactNode;
+  redirectPath?: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  isAuthenticated,
-  redirectPath = "/login",
   children,
+  redirectPath = "/login",
 }) => {
+  const { isAuthenticated } = useAuth(); // Получаем состояние аутентификации из AuthContext
+
   if (!isAuthenticated) {
+    // Если пользователь не аутентифицирован, перенаправляем на redirectPath
     return <Navigate to={redirectPath} />;
   }
 
+  // Если пользователь аутентифицирован, рендерим дочерние компоненты
   return <>{children}</>;
 };
 
